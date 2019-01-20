@@ -23,7 +23,7 @@ A minimal and extensible zsh theme. Forked from [subnixr's original](https://git
 
 4. Execute `zimfw update` to keep it updated.
 
-*Note:* `minimal` can also be used with other zsh frameworks that allow plugin installation via GitHub - usually supplying `zimfw/minimal` will work. Note that this prompt needs the (`git-info`)[https://github.com/zimfw/git-info] plugin to work.
+*Note:* `minimal` can also be used with other zsh frameworks that allow plugin installation via GitHub - usually supplying `zimfw/minimal` will work. Note that this prompt needs the [git-info](https://github.com/zimfw/git-info) plugin to work.
 
 # Changes from original `minimal.zsh`
 
