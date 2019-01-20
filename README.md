@@ -8,10 +8,12 @@ A minimal and extensible zsh theme. Forked from [subnixr's original](https://git
 
 1. Add `minimal` to your list of enabled zim modules in your `.zimrc`:
 
+    ```
     zstyle ':zim' modules \
     [...]
     minimal \
     [...]
+    ```
 
 2. Add `minimal` to the module setup configuration in your `.zimrc`:
 
