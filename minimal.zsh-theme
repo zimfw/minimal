@@ -5,23 +5,21 @@
 # https://github.com/subnixr/minimal
 #
 
-function {
-  # Global settings
-  MNML_OK_COLOR="${MNML_OK_COLOR:-green}"
-  MNML_ERR_COLOR="${MNML_ERR_COLOR:-red}"
-  # ADDED FOR ZIMFW
-  MNML_DIV_COLOR="${MNML_DIV_COLOR:-magenta}"
+# Global settings
+MNML_OK_COLOR="${MNML_OK_COLOR:-green}"
+MNML_ERR_COLOR="${MNML_ERR_COLOR:-red}"
+# ADDED FOR ZIMFW
+MNML_DIV_COLOR="${MNML_DIV_COLOR:-magenta}"
 
-  MNML_USER_CHAR="${MNML_USER_CHAR:-λ}"
-  MNML_INSERT_CHAR="${MNML_INSERT_CHAR:-›}"
-  MNML_NORMAL_CHAR="${MNML_NORMAL_CHAR:-·}"
+MNML_USER_CHAR="${MNML_USER_CHAR:-λ}"
+MNML_INSERT_CHAR="${MNML_INSERT_CHAR:-›}"
+MNML_NORMAL_CHAR="${MNML_NORMAL_CHAR:-·}"
 
-  [ "${+MNML_PROMPT}" -eq 0 ] && MNML_PROMPT=(mnml_ssh mnml_pyenv mnml_status mnml_keymap)
-  [ "${+MNML_RPROMPT}" -eq 0 ] && MNML_RPROMPT=('mnml_cwd 2 0' mnml_git)
-  [ "${+MNML_INFOLN}" -eq 0 ] && MNML_INFOLN=(mnml_err mnml_jobs mnml_uhp mnml_files)
+[ "${+MNML_PROMPT}" -eq 0 ] && MNML_PROMPT=(mnml_ssh mnml_pyenv mnml_status mnml_keymap)
+[ "${+MNML_RPROMPT}" -eq 0 ] && MNML_RPROMPT=('mnml_cwd 2 0' mnml_git)
+[ "${+MNML_INFOLN}" -eq 0 ] && MNML_INFOLN=(mnml_err mnml_jobs mnml_uhp mnml_files)
 
-  [ "${+MNML_MAGICENTER}" -eq 0 ] && MNML_MAGICENTER=(mnml_me_dirs mnml_me_ls mnml_me_git)
-}
+[ "${+MNML_MAGICENTER}" -eq 0 ] && MNML_MAGICENTER=(mnml_me_dirs mnml_me_ls mnml_me_git)
 
 # Components
 mnml_status() {
@@ -156,7 +154,7 @@ mnml_iline() {
 mnml_me() {
   local -a output
   output=()
-  local cmd_output=""
+  local cmd_out=""
   local cmd
   for cmd in ${MNML_MAGICENTER}; do
     cmd_out="$(eval "$cmd")"
@@ -191,24 +189,24 @@ mnml_buffer-empty() {
   fi
 }
 
-# Safely bind widgets
+# properly bind widgets
 # see: https://github.com/zsh-users/zsh-syntax-highlighting/blob/1f1e629290773bd6f9673f364303219d6da11129/zsh-syntax-highlighting.zsh#L292-L356
-prompt_minimal_bind() {
+_mnml_bind_widgets() {
   zmodload zsh/zleparameter
 
-  local -a bindings
-  bindings=(zle-line-init zle-keymap-select buffer-empty)
+  local -a to_bind
+  to_bind=(zle-line-init zle-keymap-select buffer-empty)
 
   typeset -F SECONDS
-  local zle_prefix="s${SECONDS}-r${RANDOM}"
+  local zle_wprefix="s${SECONDS}-r${RANDOM}"
   local cur_widget
-  for cur_widget in ${bindings}; do
+  for cur_widget in ${to_bind}; do
     case "${widgets[$cur_widget]:-""}" in
       user:mnml_*);;
       user:*)
-        zle -N ${zle_prefix}-${cur_widget} ${widgets[$cur_widget]#*:}
-        eval "mnml_ww_${(q)zle_prefix}-${(q)cur_widget}() { mnml_${(q)cur_widget}; zle ${(q)zle_prefix}-${(q)cur_widget} }"
-        zle -N ${cur_widget} mnml_ww_${zle_prefix}-${cur_widget}
+        zle -N ${zle_wprefix}-${cur_widget} ${widgets[$cur_widget]#*:}
+        eval "mnml_ww_${(q)zle_wprefix}-${(q)cur_widget}() { mnml_${(q)cur_widget}; zle ${(q)zle_wprefix}-${(q)cur_widget} }"
+        zle -N ${cur_widget} mnml_ww_${zle_wprefix}-${cur_widget}
         ;;
       *)
         zle -N ${cur_widget} mnml_${cur_widget}
@@ -217,92 +215,27 @@ prompt_minimal_bind() {
   done
 }
 
-prompt_minimal_help() {
-  cat <<EOH
-  This prompt can be customized by setting environment variables in your
-  .zshrc:
-
-  - MNML_OK_COLOR: Color for successful things (default: 'green')
-  - MNML_ERR_COLOR: Color for failures (default: 'red')
-  - MNML_DIV_COLOR: Color for diverted git status (default: 'magenta')
-  - MNML_USER_CHAR: Character used for unprivileged users (default: 'λ')
-  - MNML_INSERT_CHAR: Character used for vi insert mode (default: '›')
-  - MNML_NORMAL_CHAR: Character used for vi normal mode (default: '·')
-
-  --------------------------------------------------------------------------
-
-  Three global arrays handle the definition and rendering position of the components:
-
-  - Components on the left prompt
-    MNML_PROMPT=(mnml_ssh mnml_pyenv mnml_status mnml_keymap)
-
-  - Components on the right prompt
-    MNML_RPROMPT=('mnml_cwd 2 0' mnml_git)
-
-  - Components shown on info line
-    MNML_INFOLN=(mnml_err mnml_jobs mnml_uhp mnml_files)
-
-  --------------------------------------------------------------------------
-
-  An additional array is used to configure magic enter's behavior:
-
-    MNML_MAGICENTER=(mnml_me_dirs mnml_me_ls mnml_me_git)
-
-  --------------------------------------------------------------------------
-
-  Also some characters and colors can be set with direct prompt parameters
-  (those will override the environment vars):
-
-  prompt minimal [mnml_ok_color] [mnml_err_color] [mnml_div_color]
-                  [mnml_user_char] [mnml_insert_char] [mnml_normal_char]
-
-  --------------------------------------------------------------------------
-EOH
-}
-
-prompt_minimal_preview() {
-  if (( ${#} )); then
-    prompt_preview_theme minimal "${@}"
-  else
-    prompt_preview_theme minimal
-    print
-    prompt_preview_theme minimal 'green' 'red' 'magenta' '#' '>' 'o'
-  fi
-}
-
 prompt_minimal_precmd() {
   (( ${+functions[git-info]} )) && git-info
 }
 
-prompt_minimal_setup() {
-  autoload -Uz add-zsh-hook && add-zsh-hook precmd prompt_minimal_precmd
-  prompt_opts=( cr percent sp subst )
-  setopt nopromptbang promptcr promptpercent promptsp promptsubst
-  prompt_minimal_bind
+autoload -Uz add-zsh-hook && add-zsh-hook precmd prompt_minimal_precmd
+setopt no_prompt_bang prompt_cr prompt_percent prompt_sp prompt_subst
 
-  MNML_OK_COLOR="${${1}:-${MNML_OK_COLOR}}"
-  MNML_ERR_COLOR="${${2}:-${MNML_ERR_COLOR}}"
-  MNML_DIV_COLOR="${${3}:-${MNML_DIV_COLOR}}"
-  MNML_USER_CHAR="${${4}:-${MNML_USER_CHAR}}"
-  MNML_INSERT_CHAR="${${5}:-${MNML_INSERT_CHAR}}"
-  MNML_NORMAL_CHAR="${${6}:-${MNML_NORMAL_CHAR}}"
-
-  zstyle ':zim:git-info:branch' format '%b'
-  zstyle ':zim:git-info:commit' format '%c'
-  zstyle ':zim:git-info:dirty' format '%F{${MNML_ERR_COLOR}}'
-  zstyle ':zim:git-info:diverged' format '%F{${MNML_DIV_COLOR}}'
-  zstyle ':zim:git-info:behind' format '%F{${MNML_DIV_COLOR}}↓ '
-  zstyle ':zim:git-info:ahead' format '%F{${MNML_DIV_COLOR}}↑ '
-  zstyle ':zim:git-info:keys' format \
-    'prompt' '' \
+zstyle ':zim:git-info:branch' format '%b'
+zstyle ':zim:git-info:commit' format '%c'
+zstyle ':zim:git-info:dirty' format '%F{${MNML_ERR_COLOR}}'
+zstyle ':zim:git-info:diverged' format '%F{${MNML_DIV_COLOR}}'
+zstyle ':zim:git-info:behind' format '%F{${MNML_DIV_COLOR}}↓ '
+zstyle ':zim:git-info:ahead' format '%F{${MNML_DIV_COLOR}}↑ '
+zstyle ':zim:git-info:keys' format \
     'rprompt' '%b%c' \
     'color' '$(coalesce "%D" "%V" "%B" "%A" "%F{${MNML_OK_COLOR}}")'
 
-  PS1='$(mnml_wrap MNML_PROMPT) '
-  RPS1='$(mnml_wrap MNML_RPROMPT)'
+PS1='$(mnml_wrap MNML_PROMPT) '
+RPS1='$(mnml_wrap MNML_RPROMPT)'
 
-  bindkey -M main "^M" buffer-empty
-  bindkey -M vicmd "^M" buffer-empty
-}
+_mnml_bind_widgets
 
-prompt_minimal_setup "${@}"
+bindkey -M main "^M" buffer-empty
+bindkey -M vicmd "^M" buffer-empty
