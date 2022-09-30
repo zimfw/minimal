@@ -16,8 +16,8 @@ if (( ! ${+MNML_NORMAL_CHAR} )) typeset -g MNML_NORMAL_CHAR=·
 # Components
 _prompt_mnml_keymap() {
   case ${KEYMAP} in
-    vicmd) print -n ${MNML_NORMAL_CHAR} ;;
-    *) print -n ${MNML_INSERT_CHAR} ;;
+    vicmd) print -n -- ${MNML_NORMAL_CHAR} ;;
+    *) print -n -- ${MNML_INSERT_CHAR} ;;
   esac
 }
 
