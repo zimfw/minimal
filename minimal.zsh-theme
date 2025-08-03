@@ -21,15 +21,11 @@ _prompt_mnml_keymap() {
   esac
 }
 
-_prompt_mnml_keymap-select() {
+zle-keymap-select() {
   zle reset-prompt
+  zle -R
 }
-if autoload -Uz is-at-least && is-at-least 5.3; then
-  autoload -Uz add-zle-hook-widget && \
-      add-zle-hook-widget -Uz keymap-select _prompt_mnml_keymap-select
-else
-  zle -N zle-keymap-select _prompt_mnml_keymap-select
-fi
+zle -N zle-keymap-select
 
 # Setup
 typeset -g VIRTUAL_ENV_DISABLE_PROMPT=1
