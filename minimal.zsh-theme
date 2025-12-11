@@ -21,11 +21,12 @@ _prompt_mnml_keymap() {
   esac
 }
 
-zle-keymap-select() {
-  zle reset-prompt
-  zle -R
-}
-zle -N zle-keymap-select
+if (( ! ${+functions[_prompt_mnml_keymap_select]} )); then
+  functions[_prompt_mnml_keymap_select]=${widgets[zle-keymap-select]#user:}'
+zle reset-prompt
+zle -R'
+  zle -N zle-keymap-select _prompt_mnml_keymap_select
+fi
 
 # Setup
 typeset -g VIRTUAL_ENV_DISABLE_PROMPT=1
