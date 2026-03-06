@@ -9,7 +9,7 @@ What does it show?
 ------------------
 
 Left prompt:
-  * The hostname only if current session is through a SSH connection.
+  * The hostname only if current session is through an SSH connection.
   * The current activated python virtualenv.
   * An indicator displaying the following information:
     * User privilege: `#` when root, MNML_USER_CHAR otherwise.
@@ -29,7 +29,7 @@ Magic enter
 -----------
 
 A fork of the magic enter feature from [subnixr's minimal] is available
-separately in Zim's [magic-enter] module.
+separately in Zim Framework's [magic-enter] module.
 
 Settings
 --------
@@ -52,13 +52,14 @@ Advanced settings
 You can customize how the current working directory is shown with the
 [prompt-pwd module settings].
 
-These advanced settings must be overridden after the theme is initialized.
+These advanced settings must be defined at the bottom of your `~/.zshrc`, after
+the modules are initialized with `source ${ZIM_HOME}/init.zsh`.
 
 Requirements
 ------------
 
-Requires Zim's [prompt-pwd] module to show the current working directory, and
-[git-info] to show git information.
+Requires Zim Framework's [prompt-pwd] module to show the current working
+directory, and [git-info] to show git information.
 
 [subnixr's minimal]: https://github.com/subnixr/minimal
 [magic-enter]: https://github.com/zimfw/magic-enter
